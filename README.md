@@ -73,14 +73,14 @@ The invoice data is loaded from an Excel file formatted like this:
 
 | Placeholder             | Source from Excel                                         | Example                                     |
 |-------------------------|-----------------------------------------------------------|---------------------------------------------|
-| `{invoiceid}`           | Generated ID from contractor name and date                | JONNY11082024                               |
-| `{issuedate}`           | Smallest work date in invoice items                       | 03/08/2025                                  |
+| `{invoiceid}`           | Generated ID from contractor name and smallest date       | JONNY11082024                               |
+| `{issuedate}`           | If not set mallest work date in invoice items (header row)| 03/08/2025                                  |
 | `{name}`                | Contractor name (header row)                              | Irina Z                                     |
 | `{address}`             | Address (header row, commas replaced by line breaks)      | 123 Example St,Example City,EX 12345        |
 | `{bank}`                | Bank details (header row, commas replaced by line breaks) | Nationwide,Acc no 171781,Sort code 27 02 06 |
 | `{additionaltext}`      | Additional text (header row)                              | Not in use                                  |
-| `{duedate}`             | Due date (header row)                                     | Paid                                        |
-| `{mmYYYY}`              | Month and year from smallest work date in invoice items   | Paid                                        |
+| `{duedate}`             | Due date, if not set issue date = 3 month (header row)    | Paid                                        |
+| `{mmYYYY}`              | Month and year from smallest work date in invoice items   | August 2024                                        |
 | `{#items}`...`{/items}` | Loop over invoice item rows                               | Work date, details, amount per row          |
 
 ---
@@ -95,8 +95,10 @@ The invoice data is loaded from an Excel file formatted like this:
 
 ### Calculated Fields
 
-- `{subtotal}`, `{total}` — Sum of all amounts  
-- `{vat}` - 
+- `{subtotal}` - Sum of all amounts  
+- `{total}` — Subtotal - vat
+- `{vatrate}` - Percentage used to calculate vat
+- `{vat}` - Calculated (from subtotal) vat
 - `{tax}` — Currently always 0.00
 
 ---
@@ -112,7 +114,7 @@ To get started quickly, you can download sample templates here:
 ---
 
 ## Version  
-Version 1.0 — more features coming soon!
+Version 1.1 — more features coming soon!
 
 ## License  
 MIT License — free for personal and commercial use.

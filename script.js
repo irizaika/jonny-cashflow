@@ -4,6 +4,7 @@ const generateBtn = document.getElementById('generateBtn');
 const logElem = document.getElementById('log');
 
 let excelData, templateArrayBuffer;
+let invoices = [];  // global variable for invoices
 
 function updateButton() {
     generateBtn.disabled = !(excelInput.files.length && templateInput.files.length);
@@ -22,7 +23,6 @@ function parseExcel(arrayBuffer) {
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
     const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null });
 
-    const invoices = [];
     let i = 1; // first row just header
     while (i < rows.length) {
         if (!rows[i] || rows[i].length === 0 || !rows[i][0]) { i++; continue; }
@@ -61,10 +61,10 @@ function parseExcel(arrayBuffer) {
             details.push(detail || '');
             i++;
         }
+        //update global variable
         invoices.push({ name, address, bank, vatrate, issuedate, additional, duedate, workDates, amounts, details });
         i++;
     }
-    return invoices;
 }
 
 function formatDate(date) {
@@ -104,11 +104,14 @@ function addMonthsClamped(date, months) {
 
 async function generateInvoices() {
     logElem.textContent = "⏳ Starting invoice generation...";
-    const invoices = parseExcel(excelData);
-    if (invoices.length === 0) { log("❌ No invoices found."); return; }
+
+    if (invoices.length === 0) {// if invoices emoty, just in case try read excel file again
+        parseExcel(excelData); 
+        if (invoices.length === 0) { log("❌ No invoices found."); return; }
+    }
     log(`✅ Found ${invoices.length} invoices.`);
 
-    for (const invoice of invoices) {
+     for (const invoice of invoices) {
         const docZip = new PizZip(templateArrayBuffer);
         const doc = new window.docxtemplater(docZip, { paragraphLoop: true, linebreaks: true });
 
@@ -123,23 +126,16 @@ async function generateInvoices() {
         const issueDateFormat = invoice.issuedate == null ? today : invoice.issuedate; //minDate,
         const issueDateStr = formatDate(issueDateFormat);
 
-        if (!invoice.duedate) {
-            // Case: empty → add 3 months to issue date
-            const baseDate = issueDateFormat; // just get it previously, value exist!
-          //  formattedDueDate = formatDate(new Date(baseDate.getFullYear(), baseDate.getMonth() + 3, baseDate.getDate()));
+        if (!invoice.duedate) { // Case: empty → add 3 months to issue date
+            const baseDate = issueDateFormat;
             formattedDueDate = formatDate(addMonthsClamped(baseDate, 3));
         }
-        else if (typeof invoice.duedate === 'string') {
-            // Case: Paid
+        else if (typeof invoice.duedate === 'string') {// Case: Paid
             formattedDueDate = 'Paid';
         }
-        else {
-            // Case: assume it's a date
+        else {// Case: assume it's a date
             formattedDueDate = formatDate(new Date(invoice.duedate));
         }
-        //const formattedDueDate = (!invoice.duedate || (typeof invoice.duedate === 'string' && invoice.duedate.toLowerCase() === 'paid'))
-        //    ? formatDate(new Date(minDate.getFullYear(), minDate.getMonth() + 3, minDate.getDate()))
-        //    : invoice.duedate;
 
         const data = {
             invoiceid: generateInvoiceID(invoice.name, minDate),
@@ -176,11 +172,46 @@ async function generateInvoices() {
     log("🎉 All invoices generated.");
 }
 
+function displayInvoiceSummary(invoices) {
+    const container = document.getElementById('invoicelog');
+    container.textContent = ''; // clear previous content
+
+    invoices.forEach((inv, idx) => {
+        const total = inv.amounts.reduce((a, b) => a + b, 0);
+        const vatRate = inv.vatrate ? inv.vatrate.toString() + '%' : 'Not set (default 20% will be used)';
+        const issuedate = inv.issuedate ? formatDate(inv.issuedate) : 'Not set (today\'s date will be used)';
+        const duedate = inv.duedate ? (typeof inv.duedate === 'string' ? inv.duedate : formatDate(inv.duedate)) : 'Not set (issue date + 3 month will be used)';
+
+        // Create list of amounts with dates:
+        const itemLines = inv.amounts.map((amt, i) => {
+            const dateStr = formatDate(inv.workDates[i]);
+            return `${i + 1}. ${dateStr} (£${amt.toFixed(2)})`;
+        }).join('\n');
+
+        const summary = [
+            `Invoice ${idx + 1}: ${inv.name}`,
+            `Items:\n${itemLines}`,  // Detailed amounts and dates here
+            `Total Amount: £${total.toFixed(2)}`,
+            `VAT Rate: ${vatRate}`,
+            `Issue Date: ${issuedate}`,
+            `Due Date: ${duedate}`,
+            '------------------------'
+        ].join('\n');
+
+        container.textContent += summary + '\n';
+    });
+}
+
 excelInput.addEventListener('change', e => {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = evt => { excelData = evt.target.result; };
+    reader.onload = evt => {
+        excelData = evt.target.result;
+        parseExcel(excelData);
+        displayInvoiceSummary(invoices);
+        updateButton();
+    };
     reader.readAsArrayBuffer(file);
 });
 
