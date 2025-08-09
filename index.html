@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Jonny CashFlow — Invoice Generator</title>
+    <link rel="stylesheet" href="style.css" />
+    <!--<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pizzip@3.1.1/dist/pizzip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docxtemplater@3.22.1/build/docxtemplater.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>-->
+    <script src="xlsx.full.min.js"></script>
+    <script src="pizzip.min.js"></script>
+    <script src="docxtemplater.js"></script>
+    <script src="FileSaver.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>📄 Invoice Generator</h1>
+        <p style="text-align:center; margin-top: -1rem; margin-bottom: 1rem;">
+            <a href="README.md" target="_blank" rel="noopener" style="font-size: 0.9rem; color: #007bff; text-decoration: none;">
+                📖 Read Documentation
+            </a>
+            <a href="templates/invoice-template.docx" target="_blank" rel="noopener" style="font-size: 0.9rem; color: #007bff; text-decoration: none;">
+                📖 DOCX Sample 1
+            </a>
+            <a href="templates/invoice-template.docx" target="_blank" rel="noopener" style="font-size: 0.9rem; color: #007bff; text-decoration: none;">
+                📖 DOCX Sample 2
+            </a>
+            <a href="templates/invoice-data-template.xlsx" target="_blank" rel="noopener" style="font-size: 0.9rem; color: #007bff; text-decoration: none;">
+                📖 Excel Sample
+            </a>
+        </p>
+
+        <div class="file-input">
+            <label for="excelFile">Choose Excel file (invoice data)</label>
+            <input type="file" id="excelFile" accept=".xlsx" />
+        </div>
+
+        <div class="file-input">
+            <label for="templateFile">Choose DOCX template file</label>
+            <input type="file" id="templateFile" accept=".docx" />
+        </div>
+
+        <button id="generateBtn" disabled>Generate Invoices</button>
+
+        <pre id="log">Please select both files to start...</pre>
+
+    </div>
+    <script src="script.js" defer></script>
+</body>
+</html>
