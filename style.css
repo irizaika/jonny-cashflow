@@ -2,21 +2,32 @@ body {
     font-family: Arial, sans-serif;
     background: #f4f6f8;
     display: flex;
-    padding: 2rem;
     flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
+    min-height: 90vh;
 }
 
-.container {
+/* Let header stretch full width */
+header {
+    width: 100%;
+}
+
+/* Center only the invoice container */
+main {
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+    flex: 1;
+}
+
+.invoice-container {
     background: white;
     padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-    max-width: 600px;
+    max-width: 600px !important;
     width: 100%;
-    flex: 1; /* take all available vertical space */
 }
+
 
 h1 {
     text-align: center;
@@ -90,4 +101,64 @@ button {
     border-radius: 12px;
     box-shadow: 0 4px 16px rgba(0,0,0,0.1);
     font-size: smaller;
+}
+
+/* Extra compact input fields */
+.form-control-compact {
+    padding: 0.25rem 0.4rem;
+    font-size: 0.85rem;
+    height: calc(1.5em + 0.5rem);
+}
+
+textarea.form-control-compact {
+    resize: vertical;
+}
+
+input[type="file"].form-control-compact {
+    padding: 0.25rem 0.4rem;
+    font-size: 0.85rem;
+    height: auto; /* file input can be tricky with fixed height */
+}
+
+
+table#itemTable.table.table-sm {
+    border-collapse: collapse;
+}
+
+table#itemTable.table.table-sm th,
+table#itemTable.table.table-sm td {
+        padding: 0.25rem 0.25rem !important;
+        font-size: 0.8rem !important;
+        line-height: 1.1 !important; /* tighter text height */
+        vertical-align: middle !important;
+    }
+/*mozilla*/
+
+
+#itemTable.table-sm th {
+    font-weight: 600;
+    background-color: #f8f9fa; /* keep light header */
+}
+
+/* Compact inputs */
+.form-control-compact {
+    padding: 0.15rem 0.3rem;
+    font-size: 0.8rem;
+    height: 1.6rem;
+}
+
+/* Smaller remove button */
+.removeItem {
+    font-size: 0.5rem;
+    padding: 0 !important;
+}
+
+.form-control-compact {
+    padding: 0.25rem 0.4rem;
+    font-size: 0.85rem;
+    height: calc(1.5em + 0.5rem);
+}
+
+textarea.form-control-compact {
+    resize: vertical;
 }

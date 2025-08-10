@@ -1,0 +1,102 @@
+﻿<!--<style>
+    /* Extra compact input fields */
+    .form-control-compact {
+        padding: 0.25rem 0.4rem;
+        font-size: 0.85rem;
+        height: calc(1.5em + 0.5rem);
+    }
+
+    textarea.form-control-compact {
+        resize: vertical;
+    }
+</style>-->
+
+<div class="container invoice-container">
+    <h3 class="mb-3">📝 Create Invoice</h3>
+
+    <form id="manualInvoiceForm" class="needs-validation" novalidate>
+        <!-- Template File -->
+        <div class="row mb-1 align-items-center">
+            <label for="templateFile" class="col-sm-3 col-form-label col-form-label-sm">Template File</label>
+            <div class="col-sm-9">
+                <input type="file" class="form-control form-control-compact" id="templateFile" accept=".docx">
+            </div>
+        </div>
+
+        <!-- Client Info -->
+        <div class="row mb-1 align-items-center">
+            <label class="col-sm-3 col-form-label col-form-label-sm">Client Name</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control form-control-compact" name="name" required>
+            </div>
+        </div>
+
+        <div class="row mb-1 align-items-center">
+            <label class="col-sm-3 col-form-label col-form-label-sm">Address</label>
+            <div class="col-sm-9">
+                <textarea class="form-control form-control-compact" name="address" rows="1" required></textarea>
+            </div>
+        </div>
+
+        <div class="row mb-1 align-items-center">
+            <label class="col-sm-3 col-form-label col-form-label-sm">Bank Details</label>
+            <div class="col-sm-9">
+                <textarea class="form-control form-control-compact" name="bank" rows="1"></textarea>
+            </div>
+        </div>
+
+        <div class="row mb-1 align-items-center">
+            <label class="col-sm-3 col-form-label col-form-label-sm">VAT Rate (%)</label>
+            <div class="col-sm-9">
+                <input type="number" class="form-control form-control-compact" name="vatrate" value="20">
+            </div>
+        </div>
+
+        <div class="row mb-1 align-items-center">
+            <label class="col-sm-3 col-form-label col-form-label-sm">Issue Date</label>
+            <div class="col-sm-9">
+                <input type="date" class="form-control form-control-compact" name="issuedate">
+            </div>
+        </div>
+
+        <div class="row mb-1 align-items-center">
+            <label class="col-sm-3 col-form-label col-form-label-sm">Due Date</label>
+            <div class="col-sm-9">
+                <input type="date" class="form-control form-control-compact" name="duedate">
+            </div>
+        </div>
+
+        <!-- Items Table -->
+        <div class="row mb-1 align-items-center">
+            <label class="col-sm-3 col-form-label col-form-label-sm">Invoice Items</label>
+            <div class="table-responsive">
+                <table id="itemTable" class="table table-bordered table-sm">
+                    <thead>
+                        <tr>
+                            <th style="width: 20%;">Date</th>
+                            <th>Details</th>
+                            <th style="width: 20%;">Amount</th>
+                            <th style="width: 5%;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Example row -->
+                        <tr>
+                            <td><input type="date" name="workdate" class="form-control form-control-compact"></td>
+                            <td><input type="text" name="details" class="form-control form-control-compact"></td>
+                            <td><input type="number" name="amount" step="1.00" class="form-control form-control-compact"></td>
+                            <td><button type="button" class="removeItem btn btn-sm">❌</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button type="button" id="addItem" class="btn btn-outline-primary btn-sm mb-2">➕ Add Item</button>
+            </div>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" id="generateBtn" class="btn btn-primary btn-sm w-100 mb-2" disabled>📄 Generate Invoice</button>
+
+        <!-- Log -->
+        <pre id="log" class="bg-light p-2 border rounded small">Upload your template file and fill data manually</pre>
+    </form>
+</div>

@@ -1,23 +1,35 @@
 # Jonny CashFlow
 
 Jonny CashFlow is your friendly invoice generator designed to simplify billing and speed up your cash flow.  
-Load your invoice data from Excel, pick your custom Word template, and generate professional invoices in seconds — all in one easy-to-use web app.
+Load your invoice data from Excel, enter invoice data manually, pick your custom Word template, and generate professional invoices in seconds — all in one easy-to-use web app.
 
 ## Features
 
 - Simple drag & drop Excel and DOCX template inputs  
+- Manual invoice data entry for quick single invoices  
 - Automated invoice generation with dynamic date formatting  
 - Calculates totals and formats your data professionally  
 - Clean, user-friendly interface for hassle-free operation  
 
 ## Getting Started
 
+### Using Excel Data
+
 1. Upload your Excel invoice data file.  
 2. Upload your DOCX invoice template.  
 3. Click **Generate Invoices** and watch the magic happen!  
 4. Download your personalized invoices and send them out.  
-5. **Important:** Ensure dates in your Excel file use the `dd/mm/yyyy` format to avoid parsing errors.
+5. **Important:** Ensure dates in your Excel file use the `dd/mm/yyyy` format to avoid parsing errors.  
 6. Placeholders in the DOCX template **can be removed but not added**, and please note that they are **case-sensitive**.
+
+### Using Manual Input
+
+1. Fill out the manual invoice form with client and invoice item details.  
+2. Upload your DOCX invoice template.  
+3. Click **Generate Invoice** to create a single invoice on the fly.  
+4. Download and send your invoice.  
+5. Dates entered manually should follow the your computer locale format (e.g., `dd/mm/yyyy` or `mm/dd/yyyy`), depending on your system settings.
+6. Template placeholders are the same as with Excel input and are required.
 
 Keep your payments flowing with **Jonny CashFlow** — because your business deserves smooth sailing.
 
@@ -69,7 +81,7 @@ The invoice data is loaded from an Excel file formatted like this:
 
 ---
 
-### Placeholder Reference
+#### Placeholder Reference
 
 | Placeholder             | Source from Excel                                         | Example                                     |
 |-------------------------|-----------------------------------------------------------|---------------------------------------------|
@@ -85,7 +97,7 @@ The invoice data is loaded from an Excel file formatted like this:
 
 ---
 
-### Invoice Item Placeholders (inside `{#items}` block)
+#### Invoice Item Placeholders (inside `{#items}` block)
 
 - `{workdate}` — Date of the service  
 - `{details}` — Description of the service/item  
@@ -93,13 +105,23 @@ The invoice data is loaded from an Excel file formatted like this:
 
 ---
 
-### Calculated Fields
+#### Calculated Fields
 
 - `{subtotal}` - Sum of all amounts  
 - `{total}` — Subtotal - vat
 - `{vatrate}` - Percentage used to calculate vat
 - `{vat}` - Calculated (from subtotal) vat
 - `{tax}` — Currently always 0.00
+
+---
+
+### Manual Input Format and Placeholder Mapping
+
+The manual invoice form requires you to input:
+
+- Client name, address, bank details, VAT rate, issue and due dates.  
+- Invoice items with date, details, and amount.  
+- The same placeholder rules apply in the DOCX template.
 
 ---
 
@@ -114,7 +136,7 @@ To get started quickly, you can download sample templates here:
 ---
 
 ## Version  
-Version 1.1 — more features coming soon!
+Version 1.2 — more features coming soon!
 
 ## License  
 MIT License — free for personal and commercial use.

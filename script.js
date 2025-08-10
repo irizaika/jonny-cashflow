@@ -1,17 +1,17 @@
-﻿const excelInput = document.getElementById('excelFile');
-const templateInput = document.getElementById('templateFile');
-const generateBtn = document.getElementById('generateBtn');
-const logElem = document.getElementById('log');
-
+﻿let excelInput, templateInput, generateBtn, logElem;
 let excelData, templateArrayBuffer;
-let invoices = [];  // global variable for invoices
+let invoices = [];
 
-function updateButton() {
+function updateButtonGeneratePage() {
     generateBtn.disabled = !(excelInput.files.length && templateInput.files.length);
     if (!generateBtn.disabled) logElem.textContent = "Ready to generate invoices.";
 }
-excelInput.addEventListener('change', updateButton);
-templateInput.addEventListener('change', updateButton);
+
+function updateButtonManualPage() {
+    //todo more validation here
+    generateBtn.disabled = !(templateInput.files.length);
+    if (!generateBtn.disabled) logElem.textContent = "Ready to generate invoices.";
+}
 
 function log(msg) {
     logElem.textContent += "\n" + msg;
@@ -202,31 +202,159 @@ function displayInvoiceSummary(invoices) {
     });
 }
 
-excelInput.addEventListener('change', e => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = evt => {
-        excelData = evt.target.result;
-        parseExcel(excelData);
-        displayInvoiceSummary(invoices);
-        updateButton();
-    };
-    reader.readAsArrayBuffer(file);
-});
+function initGenerateInvoicePage() {
+    excelInput = document.getElementById('excelFile');
+    templateInput = document.getElementById('templateFile');
+    generateBtn = document.getElementById('generateBtn');
+    logElem = document.getElementById('log');
 
-templateInput.addEventListener('change', e => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = evt => { templateArrayBuffer = evt.target.result; };
-    reader.readAsArrayBuffer(file);
-});
+    invoices = [];  // global variable for invoices
 
-generateBtn.addEventListener('click', () => {
-    if (!excelData || !templateArrayBuffer) {
-        alert('Please select both Excel and template files.');
-        return;
+    excelInput.addEventListener('change', updateButtonGeneratePage);
+    templateInput.addEventListener('change', updateButtonGeneratePage);
+
+
+    templateInput.addEventListener('change', e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = evt => { templateArrayBuffer = evt.target.result; };
+        reader.readAsArrayBuffer(file);
+    });
+
+    generateBtn.addEventListener('click', () => {
+        if (!excelData || !templateArrayBuffer) {
+            alert('Please select both Excel and template files.');
+            return;
+        }
+        generateInvoices();
+    });
+
+    excelInput.addEventListener('change', e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = evt => {
+            excelData = evt.target.result;
+            parseExcel(excelData);
+            displayInvoiceSummary(invoices);
+            updateButtonGeneratePage();
+        };
+        reader.readAsArrayBuffer(file);
+    });
+}
+
+function initManualInputPage() {
+    generateBtn = document.getElementById('generateBtn');
+    templateInput = document.getElementById('templateFile');
+    logElem = document.getElementById('log');
+
+    invoices = [];  // global variable for invoices
+
+  //  templateInput.addEventListener('change', updateButtonManualPage);
+
+
+    templateInput.addEventListener('change', e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = evt => { templateArrayBuffer = evt.target.result; };
+        reader.readAsArrayBuffer(file);
+        logElem.textContent = "Ready to generate invoices.";
+        updateButtonManualPage()
+    });
+
+    document.getElementById('addItem').addEventListener('click', () => {
+        const tbody = document.querySelector('#itemTable tbody');
+        const row = document.createElement('tr');
+        row.innerHTML = `
+        <td><input type="date" name="workdate" class="form-control form-control-compact"></td>
+        <td><input type="text" name="details" class="form-control form-control-compact"></td>
+        <td><input type="number" name="amount" step="1.00" class="form-control form-control-compact"></td>
+        <td><button type="button" class="removeItem btn btn-sm">❌</button></td>
+  `;
+        tbody.appendChild(row);
+    });
+
+    document.getElementById('itemTable').addEventListener('click', e => {
+        if (e.target.classList.contains('removeItem')) {
+            e.target.closest('tr').remove();
+        }
+    });
+
+    document.getElementById('manualInvoiceForm').addEventListener('submit', e => {
+        e.preventDefault();
+        const form = e.target;
+        const formData = new FormData(form);
+
+        const items = Array.from(document.querySelectorAll('#itemTable tbody tr')).map(tr => {
+            const dateVal = tr.querySelector('input[name="workdate"]').value;
+            const dateObj = new Date(dateVal);
+           // const formatted = dateObj.toLocaleDateString('en-GB'); // UK style DD/MM/YYYY
+
+            return {
+                workdate: dateObj,
+                details: tr.querySelector('input[name="details"]').value,
+                amount: parseFloat(tr.querySelector('input[name="amount"]').value)
+            };
+        });
+
+        const dueDateVal = formData.get('duedate');
+        const dueDateObj = dueDateVal ? new Date(dueDateVal) : null;
+
+        const issueDateVal = formData.get('issuedate');
+        const issueDateObj = issueDateVal ? new Date(issueDateVal) : null;
+
+        const invoice = {
+            name: formData.get('name'),
+            address: formData.get('address'),
+            bank: formData.get('bank'),
+            vatrate: parseFloat(formData.get('vatrate')) || 20,
+            issuedate: issueDateObj,
+            duedate: dueDateObj,
+            additional: '', // No additional text in manual input
+            workDates: items.map(i => i.workdate),
+            amounts: items.map(i => i.amount),
+            details: items.map(i => i.details)
+        };
+
+        invoices.push(invoice);
+
+        generateInvoices();
+    });
+}
+
+
+let mainContent = document.getElementById("mainContent");
+
+// Function to load a page into mainContent
+function loadPage(page) {
+    fetch(page)
+        .then(res => {
+            if (!res.ok) throw new Error(`Failed to load ${page}`);
+            return res.text();
+        })
+        .then(html => {
+            mainContent.innerHTML = html;
+            if (page === 'generate.html') {
+                initGenerateInvoicePage();
+            } else if (page === 'manual.html') {
+                initManualInputPage();
+            } 
+        })
+        .catch(err => {
+            mainContent.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
+        });
+}
+
+document.addEventListener("click", e => {
+    const link = e.target.closest("[data-page]");
+    if (!link) return; // click wasn't on a data-page element
+    e.preventDefault();
+    const page = link.getAttribute("data-page");
+    if (page) {
+        loadPage(page);
     }
-    generateInvoices();
 });
+
+loadPage("home.html");

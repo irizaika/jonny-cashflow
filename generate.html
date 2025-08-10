@@ -1,0 +1,20 @@
+﻿<div class="container invoice-container">
+    <h3 class="mb-3">📝 Create Invoices using Excel data </h3>
+
+    <!-- Template File -->
+    <div class="file-input">
+        <label for="excelFile">Choose Excel file (invoice data)</label>
+        <input type="file" class="form-control form-control-compact" id="excelFile" accept=".xlsx">
+    </div>
+
+    <div class="file-input">
+        <label for="templateFile">Choose DOCX template file</label>
+        <input type="file" class="form-control form-control-compact" id="templateFile" accept=".docx">
+    </div>
+
+    <!-- Submit -->
+    <button id="generateBtn" disabled class="btn btn-primary btn-sm w-100 mb-2">📄 Generate Invoice</button>
+
+    <pre id="log">Please select both files to start...</pre>
+    <pre id="invoicelog">Uploaded invoice info ...</pre>
+</div>
